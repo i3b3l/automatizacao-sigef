@@ -572,3 +572,4 @@ if book:
     book.close()
 print("\nScript finalizado. A janela de depuracao permanece aberta.") 
 pyautogui.alert(text='Encerrei por aqui.', title='Fim', button='OK')
+
