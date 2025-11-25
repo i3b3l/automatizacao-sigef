@@ -165,6 +165,8 @@ with sync_playwright() as p:
                     banco = cell.value
                     banco = str(banco)
 
+                    
+
             #LENDO A AGENCIA
             coluna = coluna + 1
             for row in pagina.iter_rows(min_row=linha,max_col=coluna,max_row=linha):
@@ -226,10 +228,14 @@ with sync_playwright() as p:
             for row in pagina.iter_rows(min_row=linha,max_col=coluna,max_row=linha):
                 for cell in row:
                     operacao = cell.value
-                    operacao = str(operacao)
-            
+                    operacao = str(operacao),
             
 
+            banco = banco.replace(' ','')
+            banco = int(banco)
+            banco = re.sub(r'(\d{2})(\d{1})', r'\1NE\2', "{:03d}".format((banco)))
+            banco = banco.replace('NE','')
+            print(banco)
             
             if liquidacao != None:
                 ja_foi_liquidado = True
@@ -327,6 +333,8 @@ with sync_playwright() as p:
                     
                         try:
                             with pp_despesa_empenhada.expect_popup() as popup_info:
+                                print('Estou procurando a CE: ' + str(despesa_certificada))
+                                print('Estou procurando a NL: ' + str(liquidacao))
                                 nao_obedece.click()
                                 time.sleep(0.5)
                                 gerar_ordem_cronologica = popup_info.value
@@ -358,7 +366,10 @@ with sync_playwright() as p:
                             time.sleep(0)
                     try:
                             with pp_despesa_empenhada.expect_popup() as popup_info:
+                                
                                 nao_obedece.click()
+                                print('Estou procurando a CE: ' + str(despesa_certificada))
+                                print('Estou procurando a NL: ' + str(liquidacao))
                                 time.sleep(0.5)
                                 gerar_ordem_cronologica = popup_info.value
                                 gerar_ordem_cronologica.wait_for_load_state('networkidle', timeout=30000)
@@ -374,6 +385,7 @@ with sync_playwright() as p:
                                 nota_lancamento_formatada = re.sub(r'(\d{4})(\d{6})', r'\1NE\2', "{:010d}".format((numero_liquidacao_1)))
                                 nota_lancamento_formatada = nota_lancamento_formatada.replace('0000NE',exercicio_NL)
                                 numero_nl.press_sequentially(str(numero_liquidacao_1)) 
+                                
                                 time.sleep(0.5) 
                                 numero_exercicio.press_sequentially(str(exercicio_financeiro))
                                 time.sleep(0.5) 
@@ -387,6 +399,8 @@ with sync_playwright() as p:
                                 time.sleep(0.5)
                     except:
                             time.sleep(0)
+
+                    
 
                     pp_despesa_empenhada.wait_for_load_state('networkidle', timeout=30000)
                     cessionario = pp_despesa_empenhada.locator("#txtCredor_SIGEFPesquisa")
